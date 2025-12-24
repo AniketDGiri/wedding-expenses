@@ -46,6 +46,7 @@ async function handleExpenseSubmit(e) {
     const expense = {
         userId: currentUser.uid,
         vendorName: document.getElementById('vendorName').value,
+        vendorContact: document.getElementById('vendorContact').value || '',
         amount: parseFloat(document.getElementById('amount').value),
         paidBy: document.getElementById('paidBy').value || 'Not Paid',
         amountPaid: parseFloat(document.getElementById('amountPaid').value) || 0,
@@ -61,6 +62,11 @@ async function handleExpenseSubmit(e) {
         
         // Show success message
         showNotification('Expense added successfully!', 'success');
+        
+        // Refresh vendors if modal is open
+        if (typeof refreshVendors === 'function') {
+            refreshVendors();
+        }
     } catch (error) {
         console.error('Error adding expense:', error);
         showNotification('Failed to add expense. Please try again.', 'error');
@@ -180,6 +186,11 @@ async function deleteExpense(id) {
     try {
         await db.collection('expenses').doc(id).delete();
         showNotification('Expense deleted successfully', 'success');
+        
+        // Refresh vendors if modal is open
+        if (typeof refreshVendors === 'function') {
+            refreshVendors();
+        }
     } catch (error) {
         console.error('Error deleting expense:', error);
         showNotification('Failed to delete expense', 'error');
