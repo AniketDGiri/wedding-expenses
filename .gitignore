@@ -9,7 +9,6 @@ Thumbs.db
 # Logs
 *.log
 
-# Firebase credentials (optional - if you want to hide from GitHub)
-firebase-config.js
+
 
 NETLIFY.md
