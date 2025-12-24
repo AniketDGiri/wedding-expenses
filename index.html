@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wedding Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💒 Wedding Expense Tracker</h1>
+            <div class="summary">
+                <div class="summary-card">
+                    <h3>Total Expenses</h3>
+                    <p class="amount" id="totalExpenses">₹0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Paid</h3>
+                    <p class="amount paid" id="totalPaid">₹0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Pending</h3>
+                    <p class="amount pending" id="totalPending">₹0</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>Add New Expense</h2>
+                <form id="expenseForm">
+                    <div class="form-group">
+                        <label for="vendorName">Vendor/Service Name</label>
+                        <input type="text" id="vendorName" required placeholder="e.g., Photographer, Caterer">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount">Amount (₹)</label>
+                        <input type="number" id="amount" required placeholder="e.g., 50000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paidBy">Paid By (Family Member)</label>
+                        <input type="text" id="paidBy" placeholder="e.g., Uncle Ram, Aunt Sita (leave empty if not paid)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amountPaid">Amount Paid (₹)</label>
+                        <input type="number" id="amountPaid" placeholder="e.g., 25000 (0 if not paid yet)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" placeholder="Any additional details..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Add Expense</button>
+                </form>
+            </div>
+
+            <div class="table-section">
+                <h2>Expense Details</h2>
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="paid">Paid</button>
+                    <button class="filter-btn" data-filter="pending">Pending</button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="expenseTable">
+                        <thead>
+                            <tr>
+                                <th>Vendor/Service</th>
+                                <th>Total Amount</th>
+                                <th>Paid Amount</th>
+                                <th>Pending</th>
+                                <th>Paid By</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <!-- Expenses will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
