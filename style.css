@@ -148,6 +148,43 @@ input:focus {
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
+/* Delete Button Styling */
+.btn-delete {
+  padding: 8px 16px;
+  background-color: #fff1f0; /* Light red background */
+  color: var(--danger); /* Modern red text */
+  border: 1px solid #ffa39e;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete:hover {
+  background-color: var(--danger);
+  color: white;
+  border-color: var(--danger);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+.btn-delete:active {
+  transform: scale(0.95);
+}
+
+/* Specific adjustment for the mobile card view */
+@media (max-width: 768px) {
+  .btn-delete {
+    width: 100%; /* Full width on mobile for easier tapping */
+    padding: 12px; /* Larger tap target */
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+}
+
 /* Mobile-First Table (The "Card" Magic) */
 .filters {
   display: flex;
