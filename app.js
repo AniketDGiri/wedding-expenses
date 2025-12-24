@@ -159,14 +159,14 @@ function createExpenseRow(expense) {
     }
     
     row.innerHTML = `
-        <td>${expense.vendorName}</td>
-        <td>₹${formatNumber(expense.amount)}</td>
-        <td>₹${formatNumber(expense.amountPaid)}</td>
-        <td class="amount pending">₹${formatNumber(pending)}</td>
-        <td>${expense.paidBy}</td>
-        <td><span class="status-badge status-${status}">${statusText}</span></td>
-        <td>${expense.notes || '-'}</td>
-        <td>
+        <td data-label="Vendor/Service">${expense.vendorName}</td>
+        <td data-label="Total Amount">₹${formatNumber(expense.amount)}</td>
+        <td data-label="Paid Amount">₹${formatNumber(expense.amountPaid)}</td>
+        <td data-label="Pending" class="amount pending">₹${formatNumber(pending)}</td>
+        <td data-label="Paid By">${expense.paidBy}</td>
+        <td data-label="Status"><span class="status-badge status-${status}">${statusText}</span></td>
+        <td data-label="Notes">${expense.notes || '-'}</td>
+        <td data-label="Actions">
             <button class="btn-delete" onclick="deleteExpense('${expense.id}')">Delete</button>
         </td>
     `;
