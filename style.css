@@ -312,3 +312,55 @@ input:focus {
   background: #ffe5e5;
   color: #c53030;
 }
+
+@media (max-width: 768px) {
+  /* Hide the original table header */
+  thead {
+    display: none;
+  }
+
+  /* Make each row look like a standalone card */
+  tr {
+    display: block;
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+  }
+
+  /* Make each cell a row inside the card */
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: right;
+    font-size: 0.95rem;
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  /* This inserts the titles (Vendor, Amount, etc.) */
+  td:before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    flex: 1;
+    text-align: left;
+  }
+
+  /* Make the Delete button fill the bottom of the card */
+  .btn-delete {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+  }
+}

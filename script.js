@@ -119,11 +119,11 @@ function renderExpenses(filter = "all") {
 
     const row = document.createElement("tr");
     row.innerHTML = `
-          <td data-label="Vendor">${expense.vendorName}</td>
-    <td data-label="Total">₹${formatNumber(expense.amount)}</td>
+         <td data-label="Vendor">${expense.vendorName}</td>
+    <td data-label="Amount">₹${formatNumber(expense.amount)}</td>
     <td data-label="Paid">₹${formatNumber(expense.amountPaid)}</td>
     <td data-label="Pending" class="amount pending">₹${formatNumber(pending)}</td>
-    <td data-label="By">${expense.paidBy}</td>
+    <td data-label="Category">${expense.category || "General"}</td>
     <td data-label="Status"><span class="status-badge status-${status}">${statusText}</span></td>
     <td data-label="Notes">${expense.notes || "-"}</td>
     <td data-label="Action">
