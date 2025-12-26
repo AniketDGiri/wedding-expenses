@@ -74,6 +74,11 @@ async function handleExpenseSubmit(e) {
         if (typeof refreshVendors === 'function') {
             refreshVendors();
         }
+        
+        // Refresh payments if modal is open
+        if (typeof refreshPayments === 'function') {
+            refreshPayments();
+        }
     } catch (error) {
         console.error('Error saving expense:', error);
         showNotification('Failed to save expense. Please try again.', 'error');
@@ -200,6 +205,11 @@ async function deleteExpense(id) {
         // Refresh vendors if modal is open
         if (typeof refreshVendors === 'function') {
             refreshVendors();
+        }
+        
+        // Refresh payments if modal is open
+        if (typeof refreshPayments === 'function') {
+            refreshPayments();
         }
     } catch (error) {
         console.error('Error deleting expense:', error);
