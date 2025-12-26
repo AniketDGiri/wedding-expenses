@@ -125,7 +125,7 @@ function loadPayments() {
             allPayments = Array.from(paymentsMap.values()).map(payment => ({
                 ...payment,
                 vendors: Array.from(payment.vendors),
-                vendorCount: payment.vendors.length
+                vendorCount: payment.vendors.size
             }));
             
             // Sort by total paid (highest first)
