@@ -71,11 +71,17 @@ function loadVendors() {
     const currentUser = getCurrentUser();
     if (!currentUser || !vendorsList) return;
     
+    const weddingId = getWeddingId();
+    if (!weddingId) {
+        vendorsList.innerHTML = '<div class="error">Wedding ID not found</div>';
+        return;
+    }
+    
     vendorsList.innerHTML = '<div class="loading">Loading vendors...</div>';
     
-    // Get all expenses for current user
+    // Get all expenses for current wedding
     db.collection('expenses')
-        .where('userId', '==', currentUser.uid)
+        .where('weddingId', '==', weddingId)
         .get()
         .then(snapshot => {
             // Create a map to track unique vendors

@@ -71,11 +71,17 @@ function loadPayments() {
     const currentUser = getCurrentUser();
     if (!currentUser || !paymentsList) return;
     
+    const weddingId = getWeddingId();
+    if (!weddingId) {
+        paymentsList.innerHTML = '<div class="error">Wedding ID not found</div>';
+        return;
+    }
+    
     paymentsList.innerHTML = '<div class="loading">Loading payment details...</div>';
     
-    // Get all expenses for current user
+    // Get all expenses for current wedding
     db.collection('expenses')
-        .where('userId', '==', currentUser.uid)
+        .where('weddingId', '==', weddingId)
         .get()
         .then(snapshot => {
             // Create a map to track payments by person
