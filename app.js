@@ -174,8 +174,10 @@ function createExpenseRow(expense) {
         <td data-label="Status"><span class="status-badge status-${status}">${statusText}</span></td>
         <td data-label="Notes">${expense.notes || '-'}</td>
         <td data-label="Actions">
-            <button class="btn-edit" onclick="editExpense('${expense.id}')">Edit</button>
-            <button class="btn-delete" onclick="deleteExpense('${expense.id}')">Delete</button>
+            <div class="action-buttons">
+                <button class="btn-edit" onclick="editExpense('${expense.id}')">✏️ Edit</button>
+                <button class="btn-delete" onclick="deleteExpense('${expense.id}')">🗑️ Delete</button>
+            </div>
         </td>
     `;
     
@@ -206,9 +208,12 @@ async function deleteExpense(id) {
 }
 
 // Edit expense
-function editExpense(id) {
+window.editExpense = function(id) {
     const expense = expenses.find(e => e.id === id);
-    if (!expense) return;
+    if (!expense) {
+        console.error('Expense not found:', id);
+        return;
+    }
     
     editingExpenseId = id;
     
@@ -237,7 +242,7 @@ function editExpense(id) {
         cancelBtn.id = 'cancelEditBtn';
         cancelBtn.className = 'btn-secondary';
         cancelBtn.textContent = 'Cancel';
-        cancelBtn.onclick = cancelEdit;
+        cancelBtn.onclick = window.cancelEdit;
         submitBtn.parentNode.appendChild(cancelBtn);
     }
     
@@ -246,7 +251,7 @@ function editExpense(id) {
 }
 
 // Cancel edit mode
-function cancelEdit() {
+window.cancelEdit = function() {
     editingExpenseId = null;
     
     // Reset form

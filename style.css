@@ -148,6 +148,15 @@ input:focus {
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 /* Action Button Styling */
 .btn-edit,
 .btn-delete {
@@ -160,8 +169,10 @@ input:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 5px;
   border: 1px solid;
-  margin-right: 6px;
+  white-space: nowrap;
+  min-width: 90px;
 }
 
 .btn-edit {
@@ -175,6 +186,7 @@ input:focus {
   color: white;
   border-color: #0066cc;
   box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+  transform: translateY(-2px);
 }
 
 .btn-delete {
@@ -188,11 +200,12 @@ input:focus {
   color: white;
   border-color: var(--danger);
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+  transform: translateY(-2px);
 }
 
 .btn-edit:active,
 .btn-delete:active {
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(0);
 }
 
 .btn-secondary {
@@ -219,11 +232,17 @@ input:focus {
 
 /* Specific adjustment for the mobile card view */
 @media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-edit,
   .btn-delete {
-    width: 100%; /* Full width on mobile for easier tapping */
-    padding: 12px; /* Larger tap target */
-    margin-top: 8px;
+    width: 100%;
+    padding: 12px;
     font-size: 1rem;
+    min-width: unset;
   }
 }
 
@@ -296,15 +315,18 @@ input:focus {
     color: #666;
   }
 
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  
   .btn-edit,
   .btn-delete {
     width: 100%;
-    margin-top: 10px;
-    margin-right: 0;
-  }
-
-  .btn-edit {
-    margin-bottom: 6px;
+    margin: 0;
+    padding: 14px;
+    font-size: 1rem;
   }
 }
 
