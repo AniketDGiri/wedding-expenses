@@ -119,18 +119,9 @@ async function handleSignup(e) {
         
         // Create user document in Firestore
         if (typeof db !== 'undefined') {
-            // Create a new wedding event for this user (they become admin)
-            const weddingRef = await db.collection('weddings').add({
-                createdBy: userCredential.user.uid,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                name: `${name}'s Wedding`
-            });
-            
             await db.collection('users').doc(userCredential.user.uid).set({
                 name: name,
                 email: email,
-                role: 'admin',
-                weddingId: weddingRef.id,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
@@ -197,63 +188,16 @@ function onUserLoggedIn(user) {
     if (signupContainer) signupContainer.style.display = 'none';
     if (appContainer) appContainer.style.display = 'block';
     
-    // Fetch user data including role
-    if (typeof db !== 'undefined') {
-        db.collection('users').doc(user.uid).get().then(userDoc => {
-            const userData = userDoc.data();
-            const role = userData?.role || 'viewer';
-            const weddingId = userData?.weddingId;
-            
-            // Store in session
-            sessionStorage.setItem('userRole', role);
-            sessionStorage.setItem('weddingId', weddingId || '');
-            
-            // Update user display name with role badge
-            const userNameDisplay = document.getElementById('userNameDisplay');
-            if (userNameDisplay) {
-                const displayName = user.displayName || user.email.split('@')[0];
-                const roleBadge = role === 'admin' ? '👑 Admin' : '👁️ Viewer';
-                userNameDisplay.innerHTML = `<span style="margin-right: 10px;">${roleBadge}</span>👤 ${displayName}`;
-            }
-            
-            // Update UI based on role
-            if (typeof updateUIForRole === 'function') {
-                updateUIForRole(role);
-            }
-            
-            // Load user's expenses if the function exists
-            if (typeof loadUserExpenses === 'function') {
-                loadUserExpenses();
-            }
-        }).catch(error => {
-            console.error('Error fetching user data:', error);
-            // Default to viewer role if error
-            sessionStorage.setItem('userRole', 'viewer');
-            
-            // Update user display name
-            const userNameDisplay = document.getElementById('userNameDisplay');
-            if (userNameDisplay) {
-                const displayName = user.displayName || user.email.split('@')[0];
-                userNameDisplay.textContent = `👤 ${displayName}`;
-            }
-            
-            // Load user's expenses if the function exists
-            if (typeof loadUserExpenses === 'function') {
-                loadUserExpenses();
-            }
-        });
-    } else {
-        // Update user display name
-        const userNameDisplay = document.getElementById('userNameDisplay');
-        if (userNameDisplay) {
-            const displayName = user.displayName || user.email.split('@')[0];
-            userNameDisplay.textContent = `👤 ${displayName}`;
-        }
-        
-        // Load user's expenses if the function exists
-        if (typeof loadUserExpenses === 'function') {
-            loadUserExpenses();
-        }
+    // Update user display name
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    if (userNameDisplay) {
+        const displayName = user.displayName || user.email.split('@')[0];
+        userNameDisplay.textContent = `👤 ${displayName}`;
+    }
+    
+    // Load user's expenses if the function exists
+    if (typeof loadUserExpenses === 'function') {
+        loadUserExpenses();
     }
 }
 
@@ -295,21 +239,6 @@ function getAuthErrorMessage(errorCode) {
 // Get current user
 function getCurrentUser() {
     return currentUser;
-}
-
-// Get current user role
-function getUserRole() {
-    return sessionStorage.getItem('userRole') || 'viewer';
-}
-
-// Get wedding ID
-function getWeddingId() {
-    return sessionStorage.getItem('weddingId') || '';
-}
-
-// Check if user is admin
-function isAdmin() {
-    return getUserRole() === 'admin';
 }
 
 // Check if user is logged in

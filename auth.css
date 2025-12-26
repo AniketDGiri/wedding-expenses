@@ -151,8 +151,7 @@
 }
 
 .btn-vendors,
-.btn-payments,
-.btn-share {
+.btn-payments {
     color: white;
     border: none;
     padding: 10px 20px;
@@ -181,16 +180,6 @@
 .btn-payments:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 176, 155, 0.4);
-}
-
-.btn-share {
-    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-    box-shadow: 0 2px 8px rgba(255, 65, 108, 0.3);
-}
-
-.btn-share:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 65, 108, 0.4);
 }
 
 /* Vendors Modal */
@@ -474,26 +463,13 @@
     }
     
     .btn-vendors,
-    .btn-payments,
-    .btn-share {
+    .btn-payments {
         width: 100%;
     }
     
     .user-info {
         width: 100%;
         justify-content: space-between;
-    }
-    
-    .share-modal-content {
-        width: 95%;
-    }
-    
-    #addViewerForm {
-        flex-direction: column;
-    }
-    
-    #addViewerForm button {
-        width: 100%;
     }
     
     .vendors-modal-content {
@@ -817,149 +793,4 @@
         align-items: flex-start;
     }
 }
-
-/* Share Access Modal */
-.share-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 3000;
-    align-items: center;
-    justify-content: center;
-}
-
-.share-modal-content {
-    background: white;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 550px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-}
-
-.share-header {
-    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-    color: white;
-    padding: 20px 30px;
-    border-radius: 15px 15px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.share-header h2 {
-    margin: 0;
-    font-size: 1.5em;
-}
-
-.share-body {
-    padding: 30px;
-}
-
-.share-body p {
-    margin-bottom: 15px;
-    color: #555;
-}
-
-.wedding-id-box {
-    display: flex;
-    gap: 10px;
-    margin: 20px 0;
-    padding: 15px;
-    background: #f8f9fa;
-    border: 2px dashed #667eea;
-    border-radius: 8px;
-    align-items: center;
-}
-
-.wedding-id-box code {
-    flex: 1;
-    font-size: 1.1em;
-    font-weight: 700;
-    color: #667eea;
-    background: white;
-    padding: 10px;
-    border-radius: 6px;
-    word-break: break-all;
-}
-
-.btn-copy {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    white-space: nowrap;
-    transition: all 0.3s;
-}
-
-.btn-copy:hover {
-    background: #5568d3;
-    transform: scale(1.05);
-}
-
-.share-instructions {
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
-    padding: 15px;
-    border-radius: 6px;
-    margin: 20px 0;
-    font-size: 0.9em;
-}
-
-.share-instructions strong {
-    color: #333;
-}
-
-.share-actions {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #e0e0e0;
-}
-
-.share-actions h3 {
-    margin-bottom: 15px;
-    color: #333;
-}
-
-#addViewerForm {
-    display: flex;
-    gap: 10px;
-}
-
-#addViewerForm input {
-    flex: 1;
-    padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1em;
-}
-
-#addViewerForm input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-#addViewerForm button {
-    padding: 12px 20px;
-    white-space: nowrap;
-}
-
-.viewer-badge {
-    display: inline-block;
-    background: #e0e0e0;
-    color: #666;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.85em;
-    font-weight: 600;
-}
-
 

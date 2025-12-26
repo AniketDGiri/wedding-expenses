@@ -44,20 +44,7 @@ async function handleExpenseSubmit(e) {
         return;
     }
     
-    // Check if user is admin
-    if (!isAdmin()) {
-        alert('Only admin users can add or edit expenses');
-        return;
-    }
-    
-    const weddingId = getWeddingId();
-    if (!weddingId) {
-        alert('Wedding ID not found. Please contact support.');
-        return;
-    }
-    
     const expense = {
-        weddingId: weddingId,
         userId: currentUser.uid,
         vendorName: document.getElementById('vendorName').value,
         vendorContact: document.getElementById('vendorContact').value || '',
@@ -103,17 +90,9 @@ function loadUserExpenses() {
     const currentUser = getCurrentUser();
     if (!currentUser) return;
     
-    const weddingId = getWeddingId();
-    if (!weddingId) {
-        console.error('No wedding ID found');
-        renderExpenses();
-        updateSummary();
-        return;
-    }
-    
-    // Real-time listener for wedding's expenses
+    // Real-time listener for user's expenses
     db.collection('expenses')
-        .where('weddingId', '==', weddingId)
+        .where('userId', '==', currentUser.uid)
         .onSnapshot(snapshot => {
             expenses = [];
             snapshot.forEach(doc => {
@@ -191,16 +170,6 @@ function createExpenseRow(expense) {
         statusText = 'Partial';
     }
     
-    const isUserAdmin = isAdmin();
-    const actionsHtml = isUserAdmin ? `
-        <td data-label="Actions">
-            <div class="action-buttons">
-                <button class="btn-edit" onclick="editExpense('${expense.id}')">✏️ Edit</button>
-                <button class="btn-delete" onclick="deleteExpense('${expense.id}')">🗑️ Delete</button>
-            </div>
-        </td>
-    ` : '<td data-label="Actions"><span class="viewer-badge">🔒 Read-only</span></td>';
-    
     row.innerHTML = `
         <td data-label="Vendor/Service">${expense.vendorName}</td>
         <td data-label="Total Amount">₹${formatNumber(expense.amount)}</td>
@@ -209,7 +178,12 @@ function createExpenseRow(expense) {
         <td data-label="Paid By">${expense.paidBy}</td>
         <td data-label="Status"><span class="status-badge status-${status}">${statusText}</span></td>
         <td data-label="Notes">${expense.notes || '-'}</td>
-        ${actionsHtml}
+        <td data-label="Actions">
+            <div class="action-buttons">
+                <button class="btn-edit" onclick="editExpense('${expense.id}')">✏️ Edit</button>
+                <button class="btn-delete" onclick="deleteExpense('${expense.id}')">🗑️ Delete</button>
+            </div>
+        </td>
     `;
     
     return row;
@@ -217,11 +191,6 @@ function createExpenseRow(expense) {
 
 // Delete expense
 async function deleteExpense(id) {
-    if (!isAdmin()) {
-        alert('Only admin users can delete expenses');
-        return;
-    }
-    
     if (!confirm('Are you sure you want to delete this expense?')) {
         return;
     }
@@ -250,11 +219,6 @@ async function deleteExpense(id) {
 
 // Edit expense
 window.editExpense = function(id) {
-    if (!isAdmin()) {
-        alert('Only admin users can edit expenses');
-        return;
-    }
-    
     const expense = expenses.find(e => e.id === id);
     if (!expense) {
         console.error('Expense not found:', id);
@@ -411,125 +375,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
-// Update UI based on user role
-window.updateUIForRole = function(role) {
-    const formSection = document.querySelector('.form-section');
-    const isUserAdmin = (role === 'admin');
-    
-    if (formSection) {
-        if (isUserAdmin) {
-            formSection.style.display = 'block';
-        } else {
-            formSection.style.display = 'none';
-        }
-    }
-    
-    // Add share button for admin
-    if (isUserAdmin) {
-        addShareButton();
-    }
-};
-
-// Add share button for admin users
-function addShareButton() {
-    const headerActions = document.querySelector('.header-actions');
-    if (!headerActions || document.getElementById('shareAccessBtn')) return;
-    
-    const shareBtn = document.createElement('button');
-    shareBtn.id = 'shareAccessBtn';
-    shareBtn.className = 'btn-share';
-    shareBtn.innerHTML = '🔗 Share Access';
-    shareBtn.onclick = showShareAccessModal;
-    
-    // Insert before user info
-    const userInfo = headerActions.querySelector('.user-info');
-    if (userInfo) {
-        headerActions.insertBefore(shareBtn, userInfo);
-    }
-}
-
-// Show share access modal
-function showShareAccessModal() {
-    const weddingId = getWeddingId();
-    const modal = document.createElement('div');
-    modal.className = 'share-modal';
-    modal.innerHTML = `
-        <div class="share-modal-content">
-            <div class="share-header">
-                <h2>📤 Share Access</h2>
-                <button onclick="this.closest('.share-modal').remove()" class="btn-close">×</button>
-            </div>
-            <div class="share-body">
-                <p>Share this Wedding ID with others to give them <strong>read-only</strong> access:</p>
-                <div class="wedding-id-box">
-                    <code id="weddingIdCode">${weddingId}</code>
-                    <button onclick="copyWeddingId()" class="btn-copy">📋 Copy</button>
-                </div>
-                <p class="share-instructions">
-                    <strong>Instructions for viewers:</strong><br>
-                    1. Create a new account (Sign up)<br>
-                    2. After signing up, they need to update their account with this Wedding ID<br>
-                    3. They will have read-only access to all expenses
-                </p>
-                <div class="share-actions">
-                    <h3>Add Viewer Access</h3>
-                    <form id="addViewerForm" onsubmit="addViewer(event)">
-                        <input type="email" id="viewerEmail" placeholder="Enter viewer's email" required>
-                        <button type="submit" class="btn-primary">Grant Access</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-// Copy wedding ID to clipboard
-window.copyWeddingId = function() {
-    const codeEl = document.getElementById('weddingIdCode');
-    const text = codeEl.textContent;
-    
-    navigator.clipboard.writeText(text).then(() => {
-        showNotification('Wedding ID copied to clipboard!', 'success');
-    }).catch(err => {
-        console.error('Failed to copy:', err);
-        showNotification('Failed to copy. Please copy manually.', 'error');
-    });
-};
-
-// Add viewer access
-window.addViewer = async function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('viewerEmail').value;
-    const weddingId = getWeddingId();
-    
-    try {
-        // Find user by email
-        const usersSnapshot = await db.collection('users').where('email', '==', email).get();
-        
-        if (usersSnapshot.empty) {
-            showNotification('User not found. They need to sign up first.', 'error');
-            return;
-        }
-        
-        const userDoc = usersSnapshot.docs[0];
-        const userData = userDoc.data();
-        
-        // Update user with wedding ID and viewer role
-        await db.collection('users').doc(userDoc.id).update({
-            weddingId: weddingId,
-            role: 'viewer'
-        });
-        
-        showNotification(`Access granted to ${email}`, 'success');
-        document.getElementById('viewerEmail').value = '';
-        
-    } catch (error) {
-        console.error('Error adding viewer:', error);
-        showNotification('Failed to grant access. Please try again.', 'error');
-    }
-};
