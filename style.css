@@ -148,12 +148,10 @@ input:focus {
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-/* Delete Button Styling */
+/* Action Button Styling */
+.btn-edit,
 .btn-delete {
   padding: 8px 16px;
-  background-color: #fff1f0; /* Light red background */
-  color: var(--danger); /* Modern red text */
-  border: 1px solid #ffa39e;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -162,6 +160,27 @@ input:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid;
+  margin-right: 6px;
+}
+
+.btn-edit {
+  background-color: #e7f3ff;
+  color: #0066cc;
+  border-color: #99c9ff;
+}
+
+.btn-edit:hover {
+  background-color: #0066cc;
+  color: white;
+  border-color: #0066cc;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+}
+
+.btn-delete {
+  background-color: #fff1f0;
+  color: var(--danger);
+  border-color: #ffa39e;
 }
 
 .btn-delete:hover {
@@ -171,8 +190,31 @@ input:focus {
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
 }
 
+.btn-edit:active,
 .btn-delete:active {
   transform: scale(0.95);
+}
+
+.btn-secondary {
+  padding: 12px 24px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+  border-color: #999;
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
 }
 
 /* Specific adjustment for the mobile card view */
@@ -254,9 +296,15 @@ input:focus {
     color: #666;
   }
 
+  .btn-edit,
   .btn-delete {
     width: 100%;
     margin-top: 10px;
+    margin-right: 0;
+  }
+
+  .btn-edit {
+    margin-bottom: 6px;
   }
 }
 

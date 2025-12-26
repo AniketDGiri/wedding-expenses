@@ -2,6 +2,7 @@
 let db;
 let expenses = [];
 let currentFilter = 'all';
+let editingExpenseId = null;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
@@ -50,26 +51,32 @@ async function handleExpenseSubmit(e) {
         amount: parseFloat(document.getElementById('amount').value),
         paidBy: document.getElementById('paidBy').value || 'Not Paid',
         amountPaid: parseFloat(document.getElementById('amountPaid').value) || 0,
-        notes: document.getElementById('notes').value,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        notes: document.getElementById('notes').value
     };
     
     try {
-        await db.collection('expenses').add(expense);
+        if (editingExpenseId) {
+            // Update existing expense
+            await db.collection('expenses').doc(editingExpenseId).update(expense);
+            showNotification('Expense updated successfully!', 'success');
+            cancelEdit();
+        } else {
+            // Add new expense
+            expense.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('expenses').add(expense);
+            showNotification('Expense added successfully!', 'success');
+        }
         
         // Reset form
         e.target.reset();
-        
-        // Show success message
-        showNotification('Expense added successfully!', 'success');
         
         // Refresh vendors if modal is open
         if (typeof refreshVendors === 'function') {
             refreshVendors();
         }
     } catch (error) {
-        console.error('Error adding expense:', error);
-        showNotification('Failed to add expense. Please try again.', 'error');
+        console.error('Error saving expense:', error);
+        showNotification('Failed to save expense. Please try again.', 'error');
     }
 }
 
@@ -167,6 +174,7 @@ function createExpenseRow(expense) {
         <td data-label="Status"><span class="status-badge status-${status}">${statusText}</span></td>
         <td data-label="Notes">${expense.notes || '-'}</td>
         <td data-label="Actions">
+            <button class="btn-edit" onclick="editExpense('${expense.id}')">Edit</button>
             <button class="btn-delete" onclick="deleteExpense('${expense.id}')">Delete</button>
         </td>
     `;
@@ -195,6 +203,68 @@ async function deleteExpense(id) {
         console.error('Error deleting expense:', error);
         showNotification('Failed to delete expense', 'error');
     }
+}
+
+// Edit expense
+function editExpense(id) {
+    const expense = expenses.find(e => e.id === id);
+    if (!expense) return;
+    
+    editingExpenseId = id;
+    
+    // Populate form fields
+    document.getElementById('vendorName').value = expense.vendorName;
+    document.getElementById('vendorContact').value = expense.vendorContact || '';
+    document.getElementById('amount').value = expense.amount;
+    document.getElementById('paidBy').value = expense.paidBy || '';
+    document.getElementById('amountPaid').value = expense.amountPaid || 0;
+    document.getElementById('notes').value = expense.notes || '';
+    
+    // Update form UI
+    const formSection = document.querySelector('.form-section h2');
+    const submitBtn = document.querySelector('#expenseForm button[type="submit"]');
+    
+    if (formSection) formSection.textContent = 'Edit Expense';
+    if (submitBtn) {
+        submitBtn.textContent = 'Update Expense';
+        submitBtn.style.backgroundColor = '#ff9800';
+    }
+    
+    // Add cancel button if it doesn't exist
+    if (!document.getElementById('cancelEditBtn')) {
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.id = 'cancelEditBtn';
+        cancelBtn.className = 'btn-secondary';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = cancelEdit;
+        submitBtn.parentNode.appendChild(cancelBtn);
+    }
+    
+    // Scroll to form
+    document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Cancel edit mode
+function cancelEdit() {
+    editingExpenseId = null;
+    
+    // Reset form
+    document.getElementById('expenseForm').reset();
+    
+    // Reset form UI
+    const formSection = document.querySelector('.form-section h2');
+    const submitBtn = document.querySelector('#expenseForm button[type="submit"]');
+    
+    if (formSection) formSection.textContent = 'Add New Expense';
+    if (submitBtn) {
+        submitBtn.textContent = 'Add Expense';
+        submitBtn.style.backgroundColor = '';
+    }
+    
+    // Remove cancel button
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    if (cancelBtn) cancelBtn.remove();
 }
 
 // Update summary cards
