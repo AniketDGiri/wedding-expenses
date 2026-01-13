@@ -434,3 +434,245 @@ input:focus {
     padding: 12px;
   }
 }
+/* Sharing Button Styles */
+.btn-share {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+/* Sharing Modal Styles */
+.sharing-section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.sharing-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.sharing-section h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.share-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.share-input-group input[type="email"] {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.permission-select {
+  padding: 12px;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #555;
+  min-width: 120px;
+}
+
+.share-input-group .btn-primary {
+  width: auto;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+}
+
+.share-hint {
+  font-size: 0.85rem;
+  color: #999;
+  margin-top: 8px;
+}
+
+.shared-users-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.shared-user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+}
+
+.shared-user-item:hover {
+  background: #e9ecef;
+}
+
+.user-info-share {
+  flex: 1;
+}
+
+.user-email {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.user-role {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.permission-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.permission-badge.view {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.permission-badge.edit {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.permission-badge.owner {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.btn-remove-share {
+  padding: 8px 16px;
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-remove-share:hover {
+  background: #c62828;
+  color: white;
+  border-color: #c62828;
+}
+
+.share-link-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.share-link-group input {
+  flex: 1;
+  min-width: 200px;
+  background: #f8f9fa;
+}
+
+.share-link-group .btn-secondary {
+  margin-left: 0;
+}
+
+/* Permission indicator in main view */
+.permission-indicator {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #fff3e0;
+  color: #f57c00;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+/* Readonly state for view-only users */
+.readonly-mode .btn-edit,
+.readonly-mode .btn-delete,
+.readonly-mode #expenseForm button[type="submit"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.readonly-banner {
+  background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+  color: white;
+  padding: 12px 20px;
+  text-align: center;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile Responsive for Sharing */
+@media (max-width: 768px) {
+  .share-input-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .share-input-group input[type="email"],
+  .permission-select,
+  .share-input-group .btn-primary {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .shared-user-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .permission-badge {
+    margin-right: 0;
+    margin-top: 5px;
+  }
+  
+  .btn-remove-share {
+    width: 100%;
+  }
+  
+  .share-link-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .share-link-group input,
+  .share-link-group .btn-secondary {
+    width: 100%;
+  }
+}

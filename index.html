@@ -32,6 +32,7 @@
                 </div>
                 <button type="submit" class="btn-primary">Login</button>
                 <p class="error-message" id="loginError"></p>
+                <p class="forgot-password"><a id="forgotPasswordLink">Forgot Password?</a></p>
             </form>
             <p class="toggle-auth">Don't have an account? <a id="showSignup">Sign up</a></p>
         </div>
@@ -70,6 +71,7 @@
                 <div class="header-actions">
                     <button id="viewVendorsBtn" class="btn-vendors">📋 View Vendors</button>
                     <button id="viewPaymentsBtn" class="btn-payments">💰 View Payments</button>
+                    <button id="shareBtn" class="btn-share">🔗 Share</button>
                     <div class="user-info">
                         <span id="userNameDisplay"></span>
                         <button id="logoutBtn" class="btn-logout">Logout</button>
@@ -197,10 +199,51 @@
         </div>
     </div>
 
+    <!-- Sharing Modal -->
+    <div id="sharingModal" class="vendors-modal" style="display: none;">
+        <div class="vendors-modal-content">
+            <div class="vendors-header">
+                <h2>🔗 Share Expense Tracker</h2>
+                <button id="closeSharingBtn" class="btn-close">×</button>
+            </div>
+            <div class="vendors-body">
+                <div class="sharing-section">
+                    <h3>Add People</h3>
+                    <div class="share-input-group">
+                        <input type="email" id="shareEmail" placeholder="Enter email address" />
+                        <select id="sharePermission" class="permission-select">
+                            <option value="view">Can View</option>
+                            <option value="edit">Can Edit</option>
+                        </select>
+                        <button id="addShareBtn" class="btn-primary">Add</button>
+                    </div>
+                    <p class="share-hint">People with access will be able to view or edit based on their permission level.</p>
+                </div>
+                
+                <div class="sharing-section">
+                    <h3>People with Access</h3>
+                    <div id="sharedUsersList" class="shared-users-list">
+                        <!-- Shared users will be populated here -->
+                    </div>
+                </div>
+
+                <div class="sharing-section">
+                    <h3>Share Link</h3>
+                    <div class="share-link-group">
+                        <input type="text" id="shareLinkInput" readonly placeholder="Generate a share link..." />
+                        <button id="copyLinkBtn" class="btn-secondary">Copy Link</button>
+                    </div>
+                    <p class="share-hint">Anyone with this link can access based on default permission.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="auth.js"></script>
     <script src="app.js"></script>
     <script src="vendors.js"></script>
     <script src="payments.js"></script>
+    <script src="sharing.js"></script>
 </body>
 </html>

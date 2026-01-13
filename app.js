@@ -86,46 +86,108 @@ async function handleExpenseSubmit(e) {
 }
 
 // Load user's expenses
-function loadUserExpenses() {
+async function loadUserExpenses() {
     const currentUser = getCurrentUser();
     if (!currentUser) return;
     
-    // Real-time listener for user's expenses
-    db.collection('expenses')
-        .where('userId', '==', currentUser.uid)
-        .onSnapshot(snapshot => {
-            expenses = [];
-            snapshot.forEach(doc => {
-                const expenseData = doc.data();
-                expenses.push({
-                    id: doc.id,
-                    ...expenseData,
-                    // Ensure createdAt exists for sorting
-                    createdAt: expenseData.createdAt || new Date()
+    try {
+        // First, always load the user's own expenses
+        const ownTrackers = [{
+            ownerId: currentUser.uid,
+            ownerEmail: currentUser.email,
+            permission: 'owner'
+        }];
+        
+        // Then try to get shared trackers (if sharing module is available)
+        let sharedTrackers = [];
+        if (window.sharingModule && typeof window.sharingModule.getAccessibleTrackers === 'function') {
+            try {
+                const allTrackers = await window.sharingModule.getAccessibleTrackers();
+                // Filter out the owner's own tracker (already added above)
+                sharedTrackers = allTrackers.filter(t => t.ownerId !== currentUser.uid);
+            } catch (shareError) {
+                console.log('Sharing module not ready, loading own expenses only');
+            }
+        }
+        
+        const accessibleTrackers = [...ownTrackers, ...sharedTrackers];
+        
+        // Create an array to store all unsubscribe functions
+        const unsubscribers = [];
+        
+        // Clear existing expenses
+        expenses = [];
+        
+        // Load expenses from all accessible trackers
+        for (const tracker of accessibleTrackers) {
+            const unsubscribe = db.collection('expenses')
+                .where('userId', '==', tracker.ownerId)
+                .onSnapshot(snapshot => {
+                    // Remove old expenses from this tracker
+                    expenses = expenses.filter(e => e.userId !== tracker.ownerId);
+                    
+                    // Add new expenses from this tracker
+                    snapshot.forEach(doc => {
+                        const expenseData = doc.data();
+                        expenses.push({
+                            id: doc.id,
+                            ...expenseData,
+                            permission: tracker.permission,
+                            isShared: tracker.ownerId !== currentUser.uid,
+                            ownerEmail: tracker.ownerEmail,
+                            // Ensure createdAt exists for sorting
+                            createdAt: expenseData.createdAt || new Date()
+                        });
+                    });
+                    
+                    // Sort expenses by createdAt (newest first)
+                    expenses.sort((a, b) => {
+                        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                        return dateB - dateA;
+                    });
+                    
+                    renderExpenses();
+                    updateSummary();
+                }, error => {
+                    console.error('Error loading expenses:', error);
                 });
-            });
             
-            // Sort expenses by createdAt in JavaScript (newest first)
-            expenses.sort((a, b) => {
-                const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-                const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-                return dateB - dateA;
-            });
-            
-            renderExpenses();
-            updateSummary();
-        }, error => {
-            console.error('Error loading expenses:', error);
-            
-            // Don't show error for new users with no data
-            if (error.code !== 'permission-denied' && expenses.length === 0) {
-                // Just render empty state
+            unsubscribers.push(unsubscribe);
+        }
+        
+        // Store unsubscribers for cleanup later
+        window.expenseUnsubscribers = unsubscribers;
+        
+    } catch (error) {
+        console.error('Error in loadUserExpenses:', error);
+        
+        // Fallback to loading only user's own expenses
+        db.collection('expenses')
+            .where('userId', '==', currentUser.uid)
+            .onSnapshot(snapshot => {
+                expenses = [];
+                snapshot.forEach(doc => {
+                    const expenseData = doc.data();
+                    expenses.push({
+                        id: doc.id,
+                        ...expenseData,
+                        permission: 'owner',
+                        isShared: false,
+                        createdAt: expenseData.createdAt || new Date()
+                    });
+                });
+                
+                expenses.sort((a, b) => {
+                    const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+                    const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                    return dateB - dateA;
+                });
+                
                 renderExpenses();
                 updateSummary();
-            } else {
-                showNotification('Failed to load expenses', 'error');
-            }
-        });
+            });
+    }
 }
 
 // Render expenses table
@@ -170,20 +232,40 @@ function createExpenseRow(expense) {
         statusText = 'Partial';
     }
     
+    // Determine if user can edit/delete
+    const canEdit = expense.permission === 'owner' || expense.permission === 'edit';
+    const isShared = expense.isShared || false;
+    
+    // Create action buttons based on permission
+    let actionButtons = '';
+    if (canEdit) {
+        actionButtons = `
+            <div class="action-buttons">
+                <button class="btn-edit" onclick="editExpense('${expense.id}')">✏️ Edit</button>
+                <button class="btn-delete" onclick="deleteExpense('${expense.id}')">🗑️ Delete</button>
+            </div>
+        `;
+    } else {
+        actionButtons = `
+            <div class="action-buttons">
+                <span style="color: #999; font-size: 0.85rem;">View Only</span>
+            </div>
+        `;
+    }
+    
+    // Add shared indicator if applicable
+    const sharedIndicator = isShared ? 
+        `<span class="permission-indicator">Shared by ${expense.ownerEmail}</span>` : '';
+    
     row.innerHTML = `
-        <td data-label="Vendor/Service">${expense.vendorName}</td>
+        <td data-label="Vendor/Service">${expense.vendorName}${sharedIndicator}</td>
         <td data-label="Total Amount">₹${formatNumber(expense.amount)}</td>
         <td data-label="Paid Amount">₹${formatNumber(expense.amountPaid)}</td>
         <td data-label="Pending" class="amount pending">₹${formatNumber(pending)}</td>
         <td data-label="Paid By">${expense.paidBy}</td>
         <td data-label="Status"><span class="status-badge status-${status}">${statusText}</span></td>
         <td data-label="Notes">${expense.notes || '-'}</td>
-        <td data-label="Actions">
-            <div class="action-buttons">
-                <button class="btn-edit" onclick="editExpense('${expense.id}')">✏️ Edit</button>
-                <button class="btn-delete" onclick="deleteExpense('${expense.id}')">🗑️ Delete</button>
-            </div>
-        </td>
+        <td data-label="Actions">${actionButtons}</td>
     `;
     
     return row;
@@ -191,6 +273,14 @@ function createExpenseRow(expense) {
 
 // Delete expense
 async function deleteExpense(id) {
+    const expense = expenses.find(e => e.id === id);
+    
+    // Check permission
+    if (expense && expense.permission === 'view') {
+        alert('You do not have permission to delete this expense');
+        return;
+    }
+    
     if (!confirm('Are you sure you want to delete this expense?')) {
         return;
     }
@@ -222,6 +312,12 @@ window.editExpense = function(id) {
     const expense = expenses.find(e => e.id === id);
     if (!expense) {
         console.error('Expense not found:', id);
+        return;
+    }
+    
+    // Check permission
+    if (expense.permission === 'view') {
+        alert('You do not have permission to edit this expense');
         return;
     }
     

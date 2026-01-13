@@ -56,6 +56,15 @@ function setupAuthEventListeners() {
         });
     }
     
+    // Forgot password link
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleForgotPassword();
+        });
+    }
+    
     // Logout button
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
@@ -63,6 +72,34 @@ function setupAuthEventListeners() {
     }
 }
 
+// Handle forgot password
+async function handleForgotPassword() {
+    const email = document.getElementById('loginEmail').value.trim();
+    
+    if (!email) {
+        alert('Please enter your email address first, then click Forgot Password');
+        document.getElementById('loginEmail').focus();
+        return;
+    }
+    
+    if (!confirm(`Send password reset email to ${email}?`)) {
+        return;
+    }
+    
+    try {
+        await auth.sendPasswordResetEmail(email);
+        alert(`Password reset email sent to ${email}. Please check your inbox (and spam folder).`);
+    } catch (error) {
+        console.error('Password reset error:', error);
+        if (error.code === 'auth/user-not-found') {
+            alert('No account found with this email address.');
+        } else if (error.code === 'auth/invalid-email') {
+            alert('Please enter a valid email address.');
+        } else {
+            alert('Failed to send reset email. Please try again.');
+        }
+    }
+}
 // Handle login
 async function handleLogin(e) {
     e.preventDefault();
